@@ -1,6 +1,8 @@
 package com.enekose.seriola_eneko_trabajo_4_android;
 
-public class Averia {
+import java.io.Serializable;
+
+public class Averia implements Serializable {
     private String titulo;
     private String modeloCoche;
     private String urlFoto;
