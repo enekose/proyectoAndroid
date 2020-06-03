@@ -44,7 +44,9 @@ class MiAdaptadorAverias extends ArrayAdapter<Averia> {
         textViewModelo.setText(elementoActual.getModeloCoche());
         textViewPresupuesto.setText(elementoActual.getNumeroImpuestos() + " presupuestos");
 
-        if(!elementoActual.getUrlFoto().isEmpty()){
+        if(elementoActual.getBitmap() != null) {
+            imageViewFoto.setImageBitmap(elementoActual.getBitmap());
+        }else if(!elementoActual.getUrlFoto().isEmpty()){
             Glide.with(ctx)
                     .load(elementoActual.getUrlFoto())
                     .into(imageViewFoto);

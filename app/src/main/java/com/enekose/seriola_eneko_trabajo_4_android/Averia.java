@@ -1,5 +1,7 @@
 package com.enekose.seriola_eneko_trabajo_4_android;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 
 public class Averia implements Serializable {
@@ -7,6 +9,7 @@ public class Averia implements Serializable {
     private String modeloCoche;
     private String urlFoto;
     private Integer numeroImpuestos;
+    private Bitmap bitmap;
 
     public Averia(String titulo, String modeloCoche, String urlFoto, Integer numeroImpuestos) {
         this.titulo = titulo;
@@ -37,6 +40,14 @@ public class Averia implements Serializable {
 
     public void setUrlFoto(String urlFoto) {
         this.urlFoto = urlFoto;
+    }
+
+    public Bitmap getBitmap() {
+        return bitmap;
+    }
+
+    public void setBitmap(Bitmap bitmap) {
+        this.bitmap = bitmap;
     }
 
     public Integer getNumeroImpuestos() {

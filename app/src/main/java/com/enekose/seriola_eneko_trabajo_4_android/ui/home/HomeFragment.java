@@ -1,7 +1,12 @@
 package com.enekose.seriola_eneko_trabajo_4_android.ui.home;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,20 +14,31 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.provider.MediaStore;
 import android.widget.Toast;
+import java.io.File;
 
+import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
+import android.os.Environment.*;
 
 import com.enekose.seriola_eneko_trabajo_4_android.Averia;
 import com.enekose.seriola_eneko_trabajo_4_android.ManagementAveria;
 import com.enekose.seriola_eneko_trabajo_4_android.R;
+import com.enekose.seriola_eneko_trabajo_4_android.activities.MainActivity;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
 
 public class HomeFragment extends Fragment implements AdapterView.OnItemClickListener {
     private ListView lista;
     private List<Averia> averiaList;
     private MiAdaptadorAverias adaptadorAverias;
+    private String pathToFile;
+    private Averia averiaSelect;
 
     public HomeFragment() {
         // Vacio
@@ -51,14 +67,41 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
         return view;
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            if (requestCode == 1) {
+                Bitmap bitmap = BitmapFactory.decodeFile(pathToFile);
+                averiaSelect.setBitmap(bitmap);
+                adaptadorAverias.notifyDataSetChanged();
+            }
+        }
+    }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        File photoFile = null;
+        photoFile = createPhotoFile();
+        if (photoFile != null) {
+            pathToFile = photoFile.getAbsolutePath();
+            Uri photoURI = FileProvider.getUriForFile(this.getContext(), "fasdad", photoFile);
+            takePic.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+            startActivityForResult(takePic, 1);
+        }
 
-        Averia averia = ManagementAveria.getAveriaPos(position);
-        averia.setUrlFoto("https://periodismodelmotor.com/wp-content/uploads/2020/01/Subasta-BMW-M3-E46-2002.jpg");
+        averiaSelect = ManagementAveria.getAveriaPos(position);
+    }
 
-        adaptadorAverias.notifyDataSetChanged();
-
+    private File createPhotoFile(){
+        String name = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
+        File image = null;
+        try {
+            image = File.createTempFile(name, ".jpg", storageDir);
+        } catch (Exception e){
+            Log.d("mylog", "Excep : " + e.toString());
+        }
+        return image;
     }
 }
