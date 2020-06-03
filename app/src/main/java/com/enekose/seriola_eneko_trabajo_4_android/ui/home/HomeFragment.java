@@ -50,12 +50,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
                 false);
         lista = (ListView) view.findViewById(R.id.listViewAverias);
 
-        //averiaList = new ArrayList<>();
-        //averiaList.add(new Averia("Espejo roto", "Audi - A4", "https://previews.123rf.com/images/martincp/martincp1505/martincp150500365/40521209-siete-a%C3%B1os-de-mala-suerte-coche-roto-ala-espejo.jpg", 2));
-        //averiaList.add(new Averia("Paragolpes delantero", "Citroen - C4", "https://img.milanuncios.com/fg/2816/07/281607271_1.jpg?VersionId=A47prdN7u1YtjPcoAzAXVhZTcKZdfTXr", 0));
-        //averiaList.add(new Averia("Alerón M3", "BMW - M3", "", 3));
-        //averiaList.add(new Averia("Junta de la trocola", "Fiat - Multipla", "", 1));
-
         ManagementAveria.addAveria(new Averia("Espejo roto", "Audi - A4", "https://previews.123rf.com/images/martincp/martincp1505/martincp150500365/40521209-siete-a%C3%B1os-de-mala-suerte-coche-roto-ala-espejo.jpg", 2));
         ManagementAveria.addAveria(new Averia("Paragolpes delantero", "Citroen - C4", "https://img.milanuncios.com/fg/2816/07/281607271_1.jpg?VersionId=A47prdN7u1YtjPcoAzAXVhZTcKZdfTXr", 0));
         ManagementAveria.addAveria(new Averia("Alerón M3", "BMW - M3", "", 3));
@@ -70,38 +64,18 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemClickLis
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            if (requestCode == 1) {
-                Bitmap bitmap = BitmapFactory.decodeFile(pathToFile);
-                averiaSelect.setBitmap(bitmap);
-                adaptadorAverias.notifyDataSetChanged();
-            }
+        if (resultCode == RESULT_OK && requestCode == 1) {
+            Bundle extras = data.getExtras();
+            Bitmap bitmap = (Bitmap) extras.get("data");
+            averiaSelect.setBitmap(bitmap);
+            adaptadorAverias.notifyDataSetChanged();
         }
     }
 
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent takePic = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        File photoFile = null;
-        photoFile = createPhotoFile();
-        if (photoFile != null) {
-            pathToFile = photoFile.getAbsolutePath();
-            Uri photoURI = FileProvider.getUriForFile(this.getContext(), "fasdad", photoFile);
-            takePic.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-            startActivityForResult(takePic, 1);
-        }
-
         averiaSelect = ManagementAveria.getAveriaPos(position);
-    }
 
-    private File createPhotoFile(){
-        String name = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        File storageDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
-        File image = null;
-        try {
-            image = File.createTempFile(name, ".jpg", storageDir);
-        } catch (Exception e){
-            Log.d("mylog", "Excep : " + e.toString());
-        }
-        return image;
+        startActivityForResult(takePic, 1);
     }
 }
